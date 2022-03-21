@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../store";
 
-import { signOut } from "../../store/actions/authActions";
+import { signOutHandler } from "../../store/actions/authActions";
 
 const Header: FC = () => {
   const navigate = useNavigate();

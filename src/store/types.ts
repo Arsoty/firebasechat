@@ -1,25 +1,17 @@
 export const SET_USER = "SET_USER";
 export const SIGN_OUT = "SIGN_OUT";
-export const SET_LOADING = "SET_LOADING";
 export const SET_ERROR = "SET_ERROR";
-export const NEED_VERIFICATION = "NEED_VERIFICATION";
-export const SET_SUCCESS = "SET_SUCCESS";
 
 export interface User {
-  nickname: string;
-  email: string;
+  nickname: string | null;
+  email: string | null;
   id: string;
-  //пофиксить object
-  createdAt: object;
 }
 
 export interface AuthState {
   user: User | null;
   authenticated: boolean;
-  loading: boolean;
-  error: string;
-  needVerification: boolean;
-  success: string;
+  error: string | null;
 }
 
 export interface SignUpData {
@@ -38,33 +30,13 @@ interface SetUserAction {
   payload: User;
 }
 
-interface SetLoadingAction {
-  type: typeof SET_LOADING;
-  payload: boolean;
+interface SetErrorAction {
+  type: typeof SET_ERROR;
+  payload: string;
 }
 
 interface SignOutAction {
   type: typeof SIGN_OUT;
 }
 
-interface SetErrorAction {
-  type: typeof SET_ERROR;
-  payload: string;
-}
-
-interface NeedVerificationAction {
-  type: typeof NEED_VERIFICATION;
-}
-
-interface SetSuccessAction {
-  type: typeof SET_SUCCESS;
-  payload: string;
-}
-
-export type AuthAction =
-  | SetUserAction
-  | SetErrorAction
-  | SetLoadingAction
-  | SetSuccessAction
-  | SignOutAction
-  | NeedVerificationAction;
+export type AuthAction = SetUserAction | SignOutAction | SetErrorAction;
