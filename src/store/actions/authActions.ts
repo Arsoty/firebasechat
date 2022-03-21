@@ -1,173 +1,134 @@
 import { ThunkAction } from "redux-thunk";
+import { Dispatch } from "redux";
 import {
   SignUpData,
   AuthAction,
   SET_USER,
   SIGN_OUT,
-  SET_LOADING,
   SET_ERROR,
-  NEED_VERIFICATION,
-  SET_SUCCESS,
-  User,
   SignInData,
 } from "../types";
 import { RootState } from "..";
-import firebase from "../../firebase/config";
+import { auth } from "../../firebase/config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 
-export const signIn = (
-  data: SignInData,
-  onError: () => void
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispacth) => {
+export const signUp = (data: SignUpData) => {
+  return async (dispatch: Dispatch<AuthAction>) => {
     try {
-      console.log(1);
-      await firebase
-        .auth()
-        .signInWithEmailAndPassword(data.email, data.password);
-    } catch (e: any) {
-      onError();
-      dispacth(setError(e.message));
-    }
-  };
-};
-
-export const authWithGoogle = (): ThunkAction<
-  void,
-  RootState,
-  null,
-  AuthAction
-> => {
-  return async (dispatch) => {
-    try {
-      console.log(1);
-      const provider = new firebase.auth.GoogleAuthProvider();
-      firebase
-        .auth()
-        .signInWithPopup(provider)
-        .then((res) => console.log(res));
+      createUserWithEmailAndPassword(auth, data.email, data.password).then(
+        (userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+        }
+      );
     } catch (e: any) {
       dispatch({ type: SET_ERROR, payload: e.message });
     }
   };
 };
 
-export const signUp = (
-  data: SignUpData,
-  onError: () => void
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispatch) => {
+export const fe = () => async (dispatch: Dispatch<AuthAction>) => {
+  dispatch({ type: SIGN_OUT });
+};
+
+export const signIn = (data: SignInData) => {
+  return async (dispatch: Dispatch<AuthAction>) => {
     try {
-      const res = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(data.email, data.password);
-      if (res.user) {
-        const userData: User = {
-          email: data.email,
-          nickname: data.nickname,
-          id: res.user.uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
-        await firebase
-          .firestore()
-          .collection("/users")
-          .doc(res.user.uid)
-          .set(userData);
-        await res.user?.sendEmailVerification();
-        dispatch({ type: NEED_VERIFICATION });
-        dispatch({ type: SET_USER, payload: userData });
-      }
+      signInWithEmailAndPassword(auth, data.email, data.password).then(
+        (userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+        }
+      );
       //Error нельзя, решения не нашел(
     } catch (e: any) {
-      onError();
       dispatch({ type: SET_ERROR, payload: e.message });
     }
   };
 };
 
-export const getUserById = (
-  id: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispatch) => {
+export const authWithGoogle = () => {
+  return async (dispatch: Dispatch<AuthAction>) => {
     try {
-      const user = await firebase
-        .firestore()
-        .collection("/users")
-        .doc(id)
-        .get();
-      if (user.exists) {
-        const userData = user.data() as User;
-        dispatch({ type: SET_USER, payload: userData });
-      }
+      const provider = new GoogleAuthProvider();
+      auth.languageCode = "rus";
+      provider.setCustomParameters({
+        login_hint: "user@example.com",
+      });
+      signInWithPopup(auth, provider).then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+        console.log(user);
+      });
     } catch (e: any) {
-      //Фикс
       dispatch({ type: SET_ERROR, payload: e.message });
     }
   };
 };
 
-export const setLoading = (
-  value: boolean
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispacth) => {
-    dispacth({ type: SET_LOADING, payload: value });
-  };
-};
-
-export const setError = (
-  msg: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispacth) => {
-    dispacth({
-      type: SET_ERROR,
-      payload: msg,
-    });
-  };
-};
-
-export const signOut = (): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispacth) => {
-    try {
-      dispacth(setLoading(true));
-      await firebase.auth().signOut();
-      dispacth({ type: SIGN_OUT });
-    } catch (e: any) {
-      dispacth(setLoading(false));
-    }
-  };
-};
-
-export const setNeedVerification = (): ThunkAction<
+export const authStateChangedHandler = (): ThunkAction<
   void,
   RootState,
   null,
   AuthAction
 > => {
-  return (dispatch) => {
-    dispatch({ type: NEED_VERIFICATION });
-  };
-};
-
-export const setSuccess = (
-  msg: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispacth) => {
-    dispacth({
-      type: SET_SUCCESS,
-      payload: msg,
+  return async (dispatch: Dispatch<AuthAction>) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch({
+          type: SET_USER,
+          payload: {
+            nickname: user.displayName,
+            id: user.uid,
+            email: user.email,
+          },
+        });
+      } else {
+        dispatch({ type: SIGN_OUT });
+      }
     });
   };
 };
 
-export const sendPasswordResetEmail = (
-  email: string,
-  successMsg: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispacth) => {
+export const signOutHandler = (): ThunkAction<
+  void,
+  RootState,
+  null,
+  AuthAction
+> => {
+  return async (dispacth: Dispatch<AuthAction>) => {
     try {
-      await firebase.auth().sendPasswordResetEmail(email);
-      dispacth(setSuccess(successMsg));
+      signOut(auth);
     } catch (e: any) {
-      dispacth(setError(e.message));
+      dispacth({ type: SET_ERROR, payload: e.message });
     }
   };
 };
+
+// export const getUserById = (
+//   id: string
+// ): ThunkAction<void, RootState, null, AuthAction> => {
+//   return async (dispatch) => {
+//     try {
+//       const user = await firebase
+//         .firestore()
+//         .collection("/users")
+//         .doc(id)
+//         .get();
+//       if (user.exists) {
+//         const userData = user.data() as User;
+//         dispatch({ type: SET_USER, payload: userData });
+//       }
+//     } catch (e: any) {
+//       //Фикс
+//       dispatch({ type: SET_ERROR, payload: e.message });
+//     }
+//   };
+// };

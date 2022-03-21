@@ -1,21 +1,9 @@
-import {
-  AuthAction,
-  AuthState,
-  SET_USER,
-  SIGN_OUT,
-  SET_LOADING,
-  SET_ERROR,
-  NEED_VERIFICATION,
-  SET_SUCCESS,
-} from "../types";
+import { AuthAction, AuthState, SET_USER, SIGN_OUT, SET_ERROR } from "../types";
 
 const initialState: AuthState = {
   user: null,
   authenticated: false,
-  loading: false,
-  error: "",
-  needVerification: false,
-  success: "",
+  error: null,
 };
 
 export default function authReducer(state = initialState, action: AuthAction) {
@@ -26,27 +14,17 @@ export default function authReducer(state = initialState, action: AuthAction) {
         user: action.payload,
         authenticated: true,
       };
-    case SET_LOADING:
-      return {
-        ...state,
-        loading: action.payload,
-      };
     case SIGN_OUT:
       return {
-        ...state,
         user: null,
         authenticated: false,
-        loading: false,
+        error: null,
       };
     case SET_ERROR:
       return {
         ...state,
         error: action.payload,
       };
-    case NEED_VERIFICATION:
-      return { ...state, needVerification: true };
-    case SET_SUCCESS:
-      return { ...state, success: action.payload };
     default:
       return state;
   }

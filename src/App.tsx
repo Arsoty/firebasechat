@@ -1,21 +1,31 @@
+import { Provider } from "react-redux";
+import { store } from "./store";
 import "./App.css";
-import { authWithGoogle } from "./store/actions/authActions";
-import { signIn } from "./store/actions/authActions";
+import {
+  authWithGoogle,
+  signUp,
+  signIn,
+  fe,
+} from "./store/actions/authActions";
 
 function App() {
   return (
-    <div className="App">
-      <button
-        onClick={() =>
-          signIn({ email: "hello", password: "22" }, () => {
-            console.log("hello");
-          })
-        }
-      >
-        просто
-      </button>
-      <button onClick={authWithGoogle}>гугл</button>
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <button
+          onClick={() =>
+            signUp({
+              email: "yaya@gmail.com",
+              password: "1234",
+              nickname: "Joshua",
+            })
+          }
+        >
+          просто
+        </button>
+        <button onClick={() => authWithGoogle()}>гугл</button>
+      </div>
+    </Provider>
   );
 }
 

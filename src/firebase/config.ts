@@ -1,6 +1,7 @@
-import firebase from "firebase/compat/app";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyDOeFzBO6l9rOeK5pKFjda2CLbkjiRTkSw",
   authDomain: "fir-chat-19230.firebaseapp.com",
   projectId: "fir-chat-19230",
@@ -8,6 +9,9 @@ firebase.initializeApp({
   messagingSenderId: "1093896585196",
   appId: "1:1093896585196:web:c7dd85ab2783ba0fb80ac9",
   measurementId: "G-EN4NGQ0GP2",
-});
+};
 
-export default firebase;
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export default app;
