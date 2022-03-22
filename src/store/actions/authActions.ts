@@ -26,6 +26,14 @@ export const signUp = (data: SignUpData) => {
         (userCredential) => {
           const user = userCredential.user;
           console.log(user);
+          dispatch({
+            type: SET_USER,
+            payload: {
+              nickname: user.displayName,
+              id: user.uid,
+              email: user.email,
+            },
+          });
         }
       );
     } catch (e: any) {
@@ -41,6 +49,14 @@ export const signIn = (data: SignInData) => {
         (userCredential) => {
           const user = userCredential.user;
           console.log(user);
+          dispatch({
+            type: SET_USER,
+            payload: {
+              nickname: user.displayName,
+              id: user.uid,
+              email: user.email,
+            },
+          });
         }
       );
       //Error нельзя, решения не нашел(
@@ -61,18 +77,6 @@ export const authWithGoogle = () => {
       signInWithPopup(auth, provider).then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const user = result.user;
-        console.log(user);
-      });
-    } catch (e: any) {
-      dispatch({ type: SET_ERROR, payload: e.message });
-    }
-  };
-};
-
-export const authStateChangedHandler = () => {
-  return async (dispatch: Dispatch<AuthAction>) => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
         dispatch({
           type: SET_USER,
           payload: {
@@ -81,10 +85,11 @@ export const authStateChangedHandler = () => {
             email: user.email,
           },
         });
-      } else {
-        dispatch({ type: SIGN_OUT });
-      }
-    });
+        console.log(user);
+      });
+    } catch (e: any) {
+      dispatch({ type: SET_ERROR, payload: e.message });
+    }
   };
 };
 
