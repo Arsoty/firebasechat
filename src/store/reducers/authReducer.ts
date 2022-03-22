@@ -16,6 +16,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
       };
     case SIGN_OUT:
       return {
+        ...state,
         user: null,
         authenticated: false,
         error: null,

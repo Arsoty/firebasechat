@@ -34,10 +34,6 @@ export const signUp = (data: SignUpData) => {
   };
 };
 
-export const fe = () => async (dispatch: Dispatch<AuthAction>) => {
-  dispatch({ type: SIGN_OUT });
-};
-
 export const signIn = (data: SignInData) => {
   return async (dispatch: Dispatch<AuthAction>) => {
     try {
@@ -73,12 +69,7 @@ export const authWithGoogle = () => {
   };
 };
 
-export const authStateChangedHandler = (): ThunkAction<
-  void,
-  RootState,
-  null,
-  AuthAction
-> => {
+export const authStateChangedHandler = () => {
   return async (dispatch: Dispatch<AuthAction>) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -97,17 +88,13 @@ export const authStateChangedHandler = (): ThunkAction<
   };
 };
 
-export const signOutHandler = (): ThunkAction<
-  void,
-  RootState,
-  null,
-  AuthAction
-> => {
-  return async (dispacth: Dispatch<AuthAction>) => {
+export const signOutHandler = () => {
+  return async (dispatch: Dispatch<AuthAction>) => {
     try {
+      dispatch({ type: SIGN_OUT });
       signOut(auth);
     } catch (e: any) {
-      dispacth({ type: SET_ERROR, payload: e.message });
+      dispatch({ type: SET_ERROR, payload: e.message });
     }
   };
 };
