@@ -8,7 +8,6 @@ import {
   signUp,
   signIn,
   authWithGoogle,
-  authStateChangedHandler,
 } from "../store/actions/authActions";
 
 export function Auth(): JSX.Element {
@@ -18,10 +17,6 @@ export function Auth(): JSX.Element {
 
   const [p, setP] = useState("");
   const [e, setE] = useState("");
-
-  useEffect(() => {
-    dispatch(authStateChangedHandler());
-  });
 
   console.log(authenticated);
 

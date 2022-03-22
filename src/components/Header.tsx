@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
 
 import {
-  authStateChangedHandler,
   signOutHandler,
 } from "../store/actions/authActions";
 import { AppBar, Button, Grid, Toolbar } from "@mui/material";
@@ -21,10 +20,7 @@ const Header: FC = () => {
         <Grid container justifyContent="flex-end">
           {authenticated ? (
             <Button
-              onClick={() => (
-                dispatch(signOutHandler()),
-                dispatch(authStateChangedHandler())
-              )}
+              onClick={() => dispatch(signOutHandler())}
               variant="contained"
             >
               Выйти
