@@ -12,6 +12,7 @@ export interface AuthState {
   user: User | null;
   authenticated: boolean;
   error: string | null;
+  nickname: string;
 }
 
 export interface SignUpData {

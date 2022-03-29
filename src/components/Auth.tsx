@@ -3,12 +3,17 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../store";
 
-import { AppBar, Button, Container, Grid, Input, Toolbar } from "@mui/material";
 import {
-  signUp,
-  signIn,
-  authWithGoogle,
-} from "../store/actions/authActions";
+  AppBar,
+  Button,
+  Container,
+  Grid,
+  Input,
+  Toolbar,
+  TextField,
+} from "@mui/material";
+import { signUp, signIn, authWithGoogle } from "../store/actions/authActions";
+import "../styles/AuthStyles.scss";
 
 export function Auth(): JSX.Element {
   // const navigate = useNavigate();
@@ -21,13 +26,21 @@ export function Auth(): JSX.Element {
   console.log(authenticated);
 
   return (
-    <Container>
+    <Container className="authContainer">
       <form>
-        <Grid container flexDirection="column" justifyContent="center">
-          Емеил
-          <Input onChange={(e) => setE(e.target.value)}></Input>
-          Пароль
-          <Input onChange={(e) => setP(e.target.value)}></Input>
+        <Grid container direction="column">
+          <TextField
+            label="Емеил"
+            color="primary"
+            // value={"babadzaki@gmail.com"}
+            onChange={(e) => setE(e.target.value)}
+          />
+          <TextField
+            label="Пароль"
+            color="primary"
+            // value={"258852"}
+            onChange={(e) => setP(e.target.value)}
+          />
           <Button
             onClick={() => dispatch(signIn({ email: e, password: p }))}
             variant="outlined"

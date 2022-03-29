@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore, collection } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDOeFzBO6l9rOeK5pKFjda2CLbkjiRTkSw",
@@ -13,5 +14,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+export const conversationsRef = collection(db, "conversations");
+export const messageRef = collection(
+  db,
+  "conversations",
+  "PSmzGOBFG0sMFERLBIrS",
+  "message"
+);
+
 export default app;
