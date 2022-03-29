@@ -1,9 +1,11 @@
 import { AuthAction, AuthState, SET_USER, SIGN_OUT, SET_ERROR } from "../types";
+import { auth } from "../../firebase/config";
 
 const initialState: AuthState = {
   user: null,
   authenticated: false,
   error: null,
+  nickname: "",
 };
 
 export default function authReducer(state = initialState, action: AuthAction) {
@@ -13,6 +15,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         ...state,
         user: action.payload,
         authenticated: true,
+        nickname: auth.currentUser?.displayName || auth.currentUser?.email,
       };
     case SIGN_OUT:
       return {
@@ -20,6 +23,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         user: null,
         authenticated: false,
         error: null,
+        nickname: "",
       };
     case SET_ERROR:
       return {
