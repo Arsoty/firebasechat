@@ -19,21 +19,27 @@ import { Members } from "./Members";
 import { db, messageRef } from "../firebase/config";
 import { getDocs, addDoc } from "firebase/firestore";
 
-export const Workspace: FC = () => {
-  // const navigate = useNavigate();
+interface MsgInterface {
+  text: string;
+  authorId: string;
+}
+
+export function Workspace(): JSX.Element {
   const dispatch = useDispatch();
-  const { authenticated } = useSelector((state: RootState) => state.auth);
+  const { id } = useSelector((state: RootState) => state.auth);
 
-  const messages: any = [];
   const [text, setText] = useState("");
+  const [messages, setMessages] = useState<MsgInterface[]>([]);
 
-  getDocs(messageRef).then((snapshot) => {
-    snapshot.docs.forEach((doc) => {
-      messages.push(Object.values({ ...doc.data() })[0]);
+  useEffect(() => {
+    const storage: any = [];
+    getDocs(messageRef).then((snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        storage.push({ ...doc.data() });
+      });
+      setMessages(storage);
     });
   });
-
-  console.log(messages);
 
   return (
     <>
@@ -44,14 +50,42 @@ export const Workspace: FC = () => {
         sx={{ width: "75%", height: "90%" }}
       >
         <Grid container sx={{ height: "90%" }}>
-          <div>
-            {messages.map((message: any) => (
-              <div>{message}</div>
-            ))}
+          <div
+            style={{
+              padding: "5%",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-evenly",
+            }}
+          >
+            {messages.map((el: MsgInterface) =>
+              el.authorId === id ? (
+                <div
+                  style={{
+                    backgroundColor: "blue",
+                    alignSelf: "flex-end",
+                    minWidth: "10%",
+                    maxWidth: "30%",
+                    height: "5%",
+                  }}
+                >
+                  {el.text}
+                </div>
+              ) : (
+                <span
+                  style={{
+                    backgroundColor: "red",
+                    minWidth: "10%",
+                    maxWidth: "30%",
+                    height: "5%",
+                  }}
+                >
+                  {el.text}
+                </span>
+              )
+            )}
           </div>
-          {/* {messages?.map((el: number) => (
-            <div>{el}</div>
-          ))} */}
         </Grid>
         <Container className="chatContainer">
           <Grid container justifyContent="flex-start">
@@ -62,7 +96,7 @@ export const Workspace: FC = () => {
               className="msgInput"
             />
             <Button
-              onClick={() => addDoc(messageRef, { text: text })}
+              onClick={() => addDoc(messageRef, { text: text, authorId: id })}
               variant={"contained"}
             >
               Отправить
@@ -73,4 +107,4 @@ export const Workspace: FC = () => {
       <Members />
     </>
   );
-};
+}

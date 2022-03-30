@@ -6,6 +6,7 @@ const initialState: AuthState = {
   authenticated: false,
   error: null,
   nickname: "",
+  id: "",
 };
 
 export default function authReducer(state = initialState, action: AuthAction) {
@@ -16,6 +17,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         user: action.payload,
         authenticated: true,
         nickname: auth.currentUser?.displayName || auth.currentUser?.email,
+        id: auth.currentUser?.uid,
       };
     case SIGN_OUT:
       return {
@@ -24,6 +26,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         authenticated: false,
         error: null,
         nickname: "",
+        id: "",
       };
     case SET_ERROR:
       return {
