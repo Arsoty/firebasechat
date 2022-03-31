@@ -16,28 +16,46 @@ import {
 
 import { Members } from "./Members";
 
-import { db, messageRef } from "../firebase/config";
-import { getDocs, addDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
+import {
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  orderBy,
+  query,
+  onSnapshot,
+  collection,
+} from "firebase/firestore";
 
 interface MsgInterface {
   text: string;
   authorId: string;
+  timestamp: number;
 }
 
+const messageRef = collection(
+  db,
+  "conversations",
+  "PSmzGOBFG0sMFERLBIrS",
+  "message"
+);
+
 export function Workspace(): JSX.Element {
-  const dispatch = useDispatch();
   const { id } = useSelector((state: RootState) => state.auth);
 
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<MsgInterface[]>([]);
 
+  const q = query(messageRef, orderBy("timestamp"));
+
   useEffect(() => {
-    const storage: any = [];
-    getDocs(messageRef).then((snapshot) => {
+    let storage: any = [];
+    onSnapshot(q, (snapshot) => {
       snapshot.docs.forEach((doc) => {
         storage.push({ ...doc.data() });
       });
       setMessages(storage);
+      storage = [];
     });
   });
 
@@ -96,7 +114,13 @@ export function Workspace(): JSX.Element {
               className="msgInput"
             />
             <Button
-              onClick={() => addDoc(messageRef, { text: text, authorId: id })}
+              onClick={() =>
+                addDoc(messageRef, {
+                  text: text,
+                  authorId: id,
+                  timestamp: serverTimestamp(),
+                })
+              }
               variant={"contained"}
             >
               Отправить

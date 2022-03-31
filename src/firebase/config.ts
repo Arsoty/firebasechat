@@ -18,11 +18,5 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 export const conversationsRef = collection(db, "conversations");
-export const messageRef = collection(
-  db,
-  "conversations",
-  "PSmzGOBFG0sMFERLBIrS",
-  "message"
-);
 
 export default app;
