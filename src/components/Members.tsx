@@ -1,4 +1,6 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import {
   AppBar,
   Button,
@@ -10,15 +12,40 @@ import {
 } from "@mui/material";
 import "../styles/ChatStyles.scss";
 import { db, conversationsRef } from "../firebase/config";
-import { getDocs } from "firebase/firestore";
+import { getDocs, onSnapshot, collection, addDoc } from "firebase/firestore";
+
+interface MemberInterface {
+  uid: string;
+}
+
+const memberRef = collection(
+  db,
+  "conversations",
+  "PSmzGOBFG0sMFERLBIrS",
+  "member"
+);
 
 export function Members(): JSX.Element {
-  const [members, setMembers] = useState([]);
-  getDocs(conversationsRef).then((snapshot) => {
-    snapshot.docs.forEach((doc) => {
-      setMembers(...([doc.data().members] as const));
+  const { id } = useSelector((state: RootState) => state.auth);
+
+  const [members, setMembers] = useState<MemberInterface[]>([]);
+
+  useEffect(() => {
+    let storage: any = [];
+    onSnapshot(memberRef, (snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        storage.push({ ...doc.data() });
+      });
+      setMembers(storage);
+      console.log(storage);
+      if (!storage.map((member: MemberInterface) => member.uid).includes(id)) {
+        addDoc(memberRef, {
+          uid: id,
+        });
+      }
+      storage = [];
     });
-  });
+  }, []);
 
   return (
     <Grid
@@ -26,8 +53,8 @@ export function Members(): JSX.Element {
       direction="column"
       sx={{ maxWidth: "25%", backgroundColor: "yellow", height: "90%" }}
     >
-      {members?.map((el: number) => (
-        <div>{el}</div>
+      {members?.map((el: MemberInterface) => (
+        <div>{el.uid}</div>
       ))}
     </Grid>
   );
