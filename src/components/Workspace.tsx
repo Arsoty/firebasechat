@@ -25,30 +25,47 @@ import {
   query,
   onSnapshot,
   collection,
+  enableNetwork,
 } from "firebase/firestore";
+
+interface TimestampInterface {
+  seconds: number;
+  nanoseconds: number;
+}
 
 interface MsgInterface {
   text: string;
   authorId: string;
-  timestamp: number;
+  timestamp: TimestampInterface;
 }
 
-const messageRef = collection(
-  db,
-  "conversations",
-  "PSmzGOBFG0sMFERLBIrS",
-  "message"
-);
+function toDateTime(timestamp: TimestampInterface) {
+  let t = new Date(Date.UTC(1970, 0, 1));
+  t.setSeconds(timestamp.seconds);
+  return t.toLocaleString("ru-RU");
+}
 
 export function Workspace(): JSX.Element {
   const { id } = useSelector((state: RootState) => state.auth);
+  const { chatId } = useSelector((state: RootState) => state.chat);
 
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<MsgInterface[]>([]);
 
-  const q = query(messageRef, orderBy("timestamp"));
+  const messageRef = collection(db, "conversations", chatId, "message");
+
+  const keyDownHandler = (event: any) => {
+    if (event.key === "Enter" || event.key === "NumEnter") {
+      addDoc(messageRef, {
+        text: text,
+        authorId: id,
+        timestamp: serverTimestamp(),
+      });
+    }
+  };
 
   useEffect(() => {
+    const q = query(messageRef, orderBy("timestamp"));
     let storage: any = [];
     onSnapshot(q, (snapshot) => {
       snapshot.docs.forEach((doc) => {
@@ -57,7 +74,7 @@ export function Workspace(): JSX.Element {
       setMessages(storage);
       storage = [];
     });
-  });
+  }, [chatId]);
 
   return (
     <>
@@ -89,6 +106,7 @@ export function Workspace(): JSX.Element {
                   }}
                 >
                   {el.text}
+                  {/* {toDateTime(el.timestamp)} */}
                 </div>
               ) : (
                 <span
@@ -100,6 +118,7 @@ export function Workspace(): JSX.Element {
                   }}
                 >
                   {el.text}
+                  {/* {toDateTime(el.timestamp)} */}
                 </span>
               )
             )}
@@ -112,6 +131,7 @@ export function Workspace(): JSX.Element {
               label="Сообщение"
               color="primary"
               className="msgInput"
+              onKeyDown={keyDownHandler}
             />
             <Button
               onClick={() =>

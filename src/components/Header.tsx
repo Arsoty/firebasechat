@@ -10,7 +10,6 @@ import { signOutHandler } from "../store/actions/authActions";
 import { AppBar, Button, Grid, Toolbar } from "@mui/material";
 
 const Header: FC = () => {
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { authenticated } = useSelector((state: RootState) => state.auth);
   const { nickname } = useSelector((state: RootState) => state.auth);

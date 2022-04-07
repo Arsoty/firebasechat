@@ -42,3 +42,15 @@ interface SignOutAction {
 }
 
 export type AuthAction = SetUserAction | SignOutAction | SetErrorAction;
+
+export const SET_CHAT = "SET_CHAT";
+export interface ChatState {
+  chatId: string;
+}
+
+export interface SetChatAction {
+  type: typeof SET_CHAT;
+  payload: string;
+}
+
+export type ChatAction = SetChatAction;
