@@ -25,7 +25,6 @@ import {
   query,
   onSnapshot,
   collection,
-  enableNetwork,
 } from "firebase/firestore";
 
 interface TimestampInterface {
@@ -36,6 +35,7 @@ interface TimestampInterface {
 interface MsgInterface {
   text: string;
   authorId: string;
+  authorName: string;
   timestamp: TimestampInterface;
 }
 
@@ -46,7 +46,7 @@ function toDateTime(timestamp: TimestampInterface) {
 }
 
 export function Workspace(): JSX.Element {
-  const { id } = useSelector((state: RootState) => state.auth);
+  const { id, nickname } = useSelector((state: RootState) => state.auth);
   const { chatId } = useSelector((state: RootState) => state.chat);
 
   const [text, setText] = useState("");
@@ -59,8 +59,10 @@ export function Workspace(): JSX.Element {
       addDoc(messageRef, {
         text: text,
         authorId: id,
+        authorName: nickname,
         timestamp: serverTimestamp(),
       });
+      setText("");
     }
   };
 
@@ -98,27 +100,31 @@ export function Workspace(): JSX.Element {
               el.authorId === id ? (
                 <div
                   style={{
-                    backgroundColor: "blue",
+                    backgroundColor: "#9055fa",
                     alignSelf: "flex-end",
                     minWidth: "10%",
                     maxWidth: "30%",
-                    height: "5%",
+                    height: "4%",
+                    borderRadius: "5px",
                   }}
                 >
                   {el.text}
-                  {/* {toDateTime(el.timestamp)} */}
+                  <div>{el.authorName}</div>
+                  {/* <div>{toDateTime(el.timestamp)}</div> */}
                 </div>
               ) : (
                 <span
                   style={{
-                    backgroundColor: "red",
+                    backgroundColor: "#1de9b6",
                     minWidth: "10%",
                     maxWidth: "30%",
-                    height: "5%",
+                    height: "4%",
+                    borderRadius: "5px",
                   }}
                 >
                   {el.text}
-                  {/* {toDateTime(el.timestamp)} */}
+                  <div>{el.authorName}</div>
+                  {/* <div>{toDateTime(el.timestamp)}</div> */}
                 </span>
               )
             )}
@@ -132,15 +138,18 @@ export function Workspace(): JSX.Element {
               color="primary"
               className="msgInput"
               onKeyDown={keyDownHandler}
+              value={text}
             />
             <Button
-              onClick={() =>
+              onClick={() => {
                 addDoc(messageRef, {
                   text: text,
                   authorId: id,
+                  authorName: nickname,
                   timestamp: serverTimestamp(),
-                })
-              }
+                });
+                setText("");
+              }}
               variant={"contained"}
             >
               Отправить
