@@ -5,8 +5,8 @@ import authReducer from "./reducers/authReducer";
 import chatReducer from "./reducers/chatReducer";
 
 export const rootReducer = combineReducers({
-  auth: authReducer,
   chat: chatReducer,
+  auth: authReducer,
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

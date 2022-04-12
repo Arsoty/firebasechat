@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
 import {
   AppBar,
@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import "../styles/ChatStyles.scss";
 import { db, conversationsRef, usersRef, auth } from "../firebase/config";
+import { setChat } from "../store/actions/chatActions";
 import {
   getDocs,
   onSnapshot,
@@ -20,6 +21,8 @@ import {
   query,
   where,
   getDoc,
+  setDoc,
+  doc,
 } from "firebase/firestore";
 
 interface MemberInterface {
@@ -34,10 +37,18 @@ interface MemberInfoInterface {
 }
 
 export function Members(): JSX.Element {
-  const { id } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+
+  //тип невер у аутхРедьюсера почему-то.
+  const { id }: any = useSelector((state: RootState) => state.auth);
   const { chatId } = useSelector((state: RootState) => state.chat);
 
   const [members, setMembers] = useState<MemberInfoInterface[]>([]);
+
+  function idGenerator(id1: string, id2: string): string {
+    let id = id1.substring(0, 5) + id2.substring(0, 5);
+    return id.split("").sort().join("");
+  }
 
   const chatChangeHandler = (userId: string): any => {
     let storage: any = [];
@@ -52,20 +63,20 @@ export function Members(): JSX.Element {
         });
 
         if (
-          !storage.every(
+          storage.every(
             (el: MemberInterface) => el.uid === userId || el.uid === id
           )
         ) {
-          addDoc(conversationsRef, { identificator: `${userId}${id}` });
-
-          const q = query(
-            conversationsRef,
-            where("identificator", "==", `${userId}${id}`)
-          );
-
-          // const docRef = doc(db, "conversations", where("identificator", "==", `${userId}${id}`));
-
-          // add(q);
+          // const docRef = doc(
+          //   db,
+          //   "conversations",
+          //   `${userId.substring(0, 5)}${id.substring(0, 5)}${id.substring(
+          //     0,
+          //     5
+          //   )}${userId.substring(0, 5)}`
+          // );
+          // setDoc(docRef, {});
+          dispatch(setChat(idGenerator(userId, id)));
         }
       });
     });
@@ -112,10 +123,15 @@ export function Members(): JSX.Element {
     <Grid
       container
       direction="column"
-      sx={{ maxWidth: "25%", backgroundColor: "yellow", height: "90%" }}
+      sx={{ maxWidth: "25%", backgroundColor: "#1de9b6", height: "90%" }}
     >
       {members?.map((el: MemberInfoInterface) => (
-        <div onClick={() => chatChangeHandler(el.uid)}>{el.displayName}</div>
+        <div
+          style={{ height: "3%", backgroundColor: "#0fa680" }}
+          onClick={() => chatChangeHandler(el.uid)}
+        >
+          {el.displayName}
+        </div>
       ))}
     </Grid>
   );
