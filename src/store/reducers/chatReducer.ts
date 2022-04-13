@@ -1,7 +1,9 @@
 import { ChatAction, ChatState, SET_CHAT } from "../types";
 
+export const baseChatId: string = "OgxmGU8RvpH8yOpAanHj";
+
 const initialState: ChatState = {
-  chatId: "OgxmGU8RvpH8yOpAanHj",
+  chatId: baseChatId,
 };
 
 export default function chatReducer(state = initialState, action: ChatAction) {
