@@ -18,6 +18,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         authenticated: true,
         nickname: auth.currentUser?.displayName || auth.currentUser?.email,
         id: auth.currentUser?.uid,
+        photoURL: auth.currentUser?.photoURL,
       };
     case SIGN_OUT:
       return {

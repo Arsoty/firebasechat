@@ -31,6 +31,7 @@ export const signUp = (data: SignUpData) => {
               nickname: user.displayName,
               id: user.uid,
               email: user.email,
+              photoURL: user.photoURL,
             },
           });
         }

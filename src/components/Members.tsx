@@ -10,6 +10,7 @@ import {
   Toolbar,
   TextField,
 } from "@mui/material";
+import { baseChatId } from "../store/reducers/chatReducer";
 import "../styles/ChatStyles.scss";
 import { db, conversationsRef, usersRef, auth } from "../firebase/config";
 import { setChat } from "../store/actions/chatActions";
@@ -20,9 +21,6 @@ import {
   addDoc,
   query,
   where,
-  getDoc,
-  setDoc,
-  doc,
 } from "firebase/firestore";
 
 interface MemberInterface {
@@ -45,10 +43,10 @@ export function Members(): JSX.Element {
 
   const [members, setMembers] = useState<MemberInfoInterface[]>([]);
 
-  function idGenerator(id1: string, id2: string): string {
+  const idGenerator = (id1: string, id2: string): string => {
     let id = id1.substring(0, 5) + id2.substring(0, 5);
     return id.split("").sort().join("");
-  }
+  };
 
   const chatChangeHandler = (userId: string): any => {
     let storage: any = [];
@@ -62,21 +60,25 @@ export function Members(): JSX.Element {
           });
         });
 
+        console.log(storage);
+
         if (
           storage.every(
             (el: MemberInterface) => el.uid === userId || el.uid === id
           )
         ) {
-          // const docRef = doc(
-          //   db,
-          //   "conversations",
-          //   `${userId.substring(0, 5)}${id.substring(0, 5)}${id.substring(
-          //     0,
-          //     5
-          //   )}${userId.substring(0, 5)}`
-          // );
-          // setDoc(docRef, {});
           dispatch(setChat(idGenerator(userId, id)));
+        } else {
+          dispatch(setChat(idGenerator(userId, id)));
+          const memberRef = collection(
+            db,
+            "conversations",
+            idGenerator(userId, id),
+            "member"
+          );
+          addDoc(memberRef, {
+            uid: userId,
+          });
         }
       });
     });
@@ -125,9 +127,26 @@ export function Members(): JSX.Element {
       direction="column"
       sx={{ maxWidth: "25%", backgroundColor: "#1de9b6", height: "90%" }}
     >
+      <div
+        style={{
+          height: "3%",
+          backgroundColor: "#9055fa",
+          marginTop: "1%",
+          textAlign: "center",
+          color: "white",
+        }}
+        onClick={() => dispatch(setChat(baseChatId))}
+      >
+        Главный чат
+      </div>
       {members?.map((el: MemberInfoInterface) => (
         <div
-          style={{ height: "3%", backgroundColor: "#0fa680" }}
+          style={{
+            height: "3%",
+            backgroundColor: "#0fa680",
+            marginTop: "1%",
+            textAlign: "center",
+          }}
           onClick={() => chatChangeHandler(el.uid)}
         >
           {el.displayName}

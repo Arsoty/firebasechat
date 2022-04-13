@@ -39,12 +39,6 @@ interface MsgInterface {
   timestamp: TimestampInterface;
 }
 
-function toDateTime(timestamp: TimestampInterface) {
-  let t = new Date(Date.UTC(1970, 0, 1));
-  t.setSeconds(timestamp.seconds);
-  return t.toLocaleString("ru-RU");
-}
-
 export function Workspace(): JSX.Element {
   const { id, nickname } = useSelector((state: RootState) => state.auth);
   const { chatId } = useSelector((state: RootState) => state.chat);
@@ -54,7 +48,14 @@ export function Workspace(): JSX.Element {
 
   const messageRef = collection(db, "conversations", chatId, "message");
 
-  const keyDownHandler = (event: any) => {
+  const toDateTime = (timestamp: TimestampInterface) => {
+    let t = new Date(Date.UTC(1970, 0, 1));
+    console.log(timestamp);
+    t.setSeconds(timestamp?.seconds);
+    return t.toLocaleString("ru-RU");
+  };
+
+  const keyDownHandler = (event: any): void => {
     if (event.key === "Enter" || event.key === "NumEnter") {
       addDoc(messageRef, {
         text: text,
@@ -110,7 +111,7 @@ export function Workspace(): JSX.Element {
                 >
                   {el.text}
                   <div>{el.authorName}</div>
-                  {/* <div>{toDateTime(el.timestamp)}</div> */}
+                  <div>{toDateTime(el.timestamp)}</div>
                 </div>
               ) : (
                 <span
@@ -124,7 +125,7 @@ export function Workspace(): JSX.Element {
                 >
                   {el.text}
                   <div>{el.authorName}</div>
-                  {/* <div>{toDateTime(el.timestamp)}</div> */}
+                  <div>{toDateTime(el.timestamp)}</div>
                 </span>
               )
             )}
