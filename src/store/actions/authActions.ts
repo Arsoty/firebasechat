@@ -9,7 +9,7 @@ import {
   SignInData,
 } from "../types";
 import { RootState } from "..";
-import { auth } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -17,6 +17,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 
 export const signUp = (data: SignUpData) => {
   return async (dispatch: Dispatch<AuthAction>) => {
@@ -33,6 +34,14 @@ export const signUp = (data: SignUpData) => {
               email: user.email,
               photoURL: user.photoURL,
             },
+          });
+          const usersRef = collection(db, "users");
+          addDoc(usersRef, {
+            uid: auth.currentUser?.uid,
+            displayName:
+              auth.currentUser?.displayName || auth.currentUser?.email,
+            email: auth.currentUser?.email,
+            photoUrl: auth.currentUser?.photoURL,
           });
         }
       );
@@ -86,6 +95,25 @@ export const authWithGoogle = () => {
           },
         });
         console.log(user);
+        const usersRef = collection(db, "users");
+        let storage: any[] = [];
+
+        onSnapshot(usersRef, (snapshot) => {
+          snapshot.docs.forEach((doc) => {
+            storage.push({ ...doc.data() });
+          });
+        });
+
+        if (storage.find((el) => el.uid === auth.currentUser?.uid)) {
+          addDoc(usersRef, {
+            uid: auth.currentUser?.uid,
+            displayName:
+              auth.currentUser?.displayName || auth.currentUser?.email,
+            email: auth.currentUser?.email,
+            photoUrl: auth.currentUser?.photoURL,
+          });
+          storage = [];
+        }
       });
     } catch (e: any) {
       dispatch({ type: SET_ERROR, payload: e.message });

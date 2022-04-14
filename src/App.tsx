@@ -11,6 +11,7 @@ import { Auth } from "./components/Auth";
 import { Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
+import { Workspace } from "./components/Workspace";
 
 function App() {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ function App() {
             {!authenticated && <Route path="/auth" element={<Auth />} />}
             {authenticated && (
               <>
-                <Route path="/chat" element={<Chat />} />
+                <Route path="/chat" element={<Workspace />} />
                 {/* <Route path="/dashboard" element={Dashboard} /> */}
               </>
             )}

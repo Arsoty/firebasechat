@@ -1,0 +1,19 @@
+.mainChatButton {
+  height: "3%";
+  background-color: #9055fa;
+  margin-top: 1%;
+  text-align: center;
+  color: white;
+}
+
+.memberList {
+  height: 3%;
+  background-color: #0fa680;
+  margin-top: 1%;
+  text-align: center;
+  .memberAvatar {
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+  }
+}
