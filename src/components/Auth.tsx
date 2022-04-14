@@ -1,17 +1,9 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../store";
 
-import {
-  AppBar,
-  Button,
-  Container,
-  Grid,
-  Input,
-  Toolbar,
-  TextField,
-} from "@mui/material";
+import { Button, Container, Grid, TextField } from "@mui/material";
 import { signUp, signIn, authWithGoogle } from "../store/actions/authActions";
 import "../styles/AuthStyles.scss";
 
@@ -20,10 +12,8 @@ export function Auth(): JSX.Element {
   const dispatch = useDispatch();
   const { authenticated } = useSelector((state: RootState) => state.auth);
 
-  const [p, setP] = useState("");
-  const [e, setE] = useState("");
-
-  console.log(authenticated);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   return (
     <Container className="authContainer">
@@ -33,16 +23,18 @@ export function Auth(): JSX.Element {
             label="Емеил"
             color="primary"
             // value={"babadzaki@gmail.com"}
-            onChange={(e) => setE(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             label="Пароль"
             color="primary"
             // value={"258852"}
-            onChange={(e) => setP(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
-            onClick={() => dispatch(signIn({ email: e, password: p }))}
+            onClick={() =>
+              dispatch(signIn({ email: email, password: password }))
+            }
             variant="outlined"
           >
             ПРОСТО
@@ -54,7 +46,9 @@ export function Auth(): JSX.Element {
           <Button
             variant="outlined"
             onClick={() =>
-              dispatch(signUp({ email: e, password: p, nickname: "Joshua" }))
+              dispatch(
+                signUp({ email: email, password: password, nickname: "Joshua" })
+              )
             }
           >
             ЗАРЕГАТЬ
