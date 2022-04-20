@@ -1,4 +1,11 @@
-import { ChatAction, ChatState, SET_CHAT, SET_MEMBERS, SET_MESSAGES } from "../types";
+import {
+  ChatAction,
+  ChatState,
+  SET_CHAT,
+  SET_MEMBERS,
+  SET_MESSAGES,
+  SET_ALL_USERS,
+} from "../types";
 
 export const baseChatId: string = "OgxmGU8RvpH8yOpAanHj";
 
@@ -6,6 +13,7 @@ const initialState: ChatState = {
   chatId: baseChatId,
   members: [],
   messages: [],
+  allUsers: [],
 };
 
 export default function chatReducer(state = initialState, action: ChatAction) {
@@ -15,6 +23,8 @@ export default function chatReducer(state = initialState, action: ChatAction) {
         ...state,
         chatId: action.payload,
       };
+    case SET_ALL_USERS:
+      return { ...state, allUsers: action.payload };
     case SET_MEMBERS:
       return {
         ...state,

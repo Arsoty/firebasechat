@@ -20,7 +20,7 @@ export function Chat(): JSX.Element {
   const dispatch = useDispatch();
 
   const { id, nickname } = useSelector((state: RootState) => state.auth);
-  const { chatId, messages, members } = useSelector(
+  const { chatId, messages, members, allUsers } = useSelector(
     (state: RootState) => state.chat
   );
 
@@ -33,6 +33,17 @@ export function Chat(): JSX.Element {
     t.setSeconds(timestamp?.seconds);
     return t.toLocaleString("ru-RU");
   };
+
+  const getInfoAboutUser = () => {
+    return (members.length !== allUsers.length ? (
+      <div>
+        <img src={members.find((el) => el.uid !== id)?.photoUrl}></img>
+        <span>{members.find((el) => el.uid !== id)?.displayName}</span>
+      </div>
+    ) : (
+      <div>Главный чат</div>
+    ))
+  }
 
   const sendMesssge = (): void => {
     addDoc(messageRef, {
@@ -71,17 +82,11 @@ export function Chat(): JSX.Element {
       container
       justifyContent="flex-end"
       direction="column"
+      className="chatBox"
       sx={{ width: "75%", height: "90%" }}
     >
-      {members.length < 2 ? (
-        <span>
-          <img src={members.find((el) => el.uid !== id)?.photoUrl}></img>
-          <span>{members.find((el) => el.uid !== id)?.displayName}</span>
-        </span>
-      ) : (
-        <div>FFFFFFFF</div>
-      )}
-      <Grid container sx={{ height: "90%" }}>
+      {getInfoAboutUser()}
+      <Grid container className="msgAreaMain">
         <div className="msgArea">
           {messages.map((el: MsgInterface) =>
             el.authorId === id ? (

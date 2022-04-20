@@ -46,11 +46,13 @@ export type AuthAction = SetUserAction | SignOutAction | SetErrorAction;
 export const SET_CHAT = "SET_CHAT";
 export const SET_MEMBERS = "SET_MEMBERS";
 export const SET_MESSAGES = "SET_MESSAGES";
+export const SET_ALL_USERS = "SET_ALL_USERS";
 
 export interface ChatState {
   chatId: string;
   members: MemberInfoInterface[];
   messages: MsgInterface[];
+  allUsers: MemberInfoInterface[];
 }
 
 export interface SetChatAction {
@@ -68,7 +70,16 @@ export interface SetMessagesAction {
   payload: MsgInterface[];
 }
 
-export type ChatAction = SetChatAction | SetMembersAction | SetMessagesAction;
+export interface SetAllUsersAction {
+  type: typeof SET_ALL_USERS;
+  payload: MemberInfoInterface[];
+}
+
+export type ChatAction =
+  | SetChatAction
+  | SetMembersAction
+  | SetMessagesAction
+  | SetAllUsersAction;
 
 export interface TimestampInterface {
   seconds: number;

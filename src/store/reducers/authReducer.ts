@@ -16,7 +16,7 @@ export default function authReducer(state = initialState, action: AuthAction) {
         ...state,
         user: action.payload,
         authenticated: true,
-        nickname: auth.currentUser?.displayName || auth.currentUser?.email,
+        nickname: auth.currentUser?.displayName,
         id: auth.currentUser?.uid,
         photoURL: auth.currentUser?.photoURL,
       };
