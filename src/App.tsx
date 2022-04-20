@@ -14,7 +14,6 @@ import { RootState } from "./store";
 import { Workspace } from "./components/Workspace";
 
 function App() {
-  const dispatch = useDispatch();
   const { authenticated } = useSelector((state: RootState) => state.auth);
 
   return (

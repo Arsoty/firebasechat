@@ -10,6 +10,7 @@ import {
   SET_CHAT,
   SET_MEMBERS,
   SET_MESSAGES,
+  SET_ALL_USERS,
 } from "../types";
 
 export const setChat = (chatId: string) => {
@@ -26,6 +27,16 @@ export const setMembers = (members: MemberInfoInterface[]) => {
   return async (dispatch: Dispatch<ChatAction>) => {
     try {
       dispatch({ type: SET_MEMBERS, payload: members });
+    } catch (e: any) {
+      console.log(e.message);
+    }
+  };
+};
+
+export const setAllUsers = (users: MemberInfoInterface[]) => {
+  return async (dispatch: Dispatch<ChatAction>) => {
+    try {
+      dispatch({ type: SET_ALL_USERS, payload: users });
     } catch (e: any) {
       console.log(e.message);
     }
