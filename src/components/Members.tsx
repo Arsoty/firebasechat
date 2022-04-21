@@ -2,11 +2,16 @@ import React, { FC, useEffect, useState } from "react";
 import "../styles/MembersStyles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
-import { Button, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { baseChatId } from "../store/reducers/chatReducer";
 import "../styles/ChatStyles.scss";
-import { db, conversationsRef, usersRef } from "../firebase/config";
-import { setAllUsers, setChat, setMembers } from "../store/actions/chatActions";
+import { db } from "../firebase/config";
+import {
+  setAllUsers,
+  setChat,
+  setMembers,
+  setCompanion,
+} from "../store/actions/chatActions";
 import { basePhotoURL } from "./Header";
 import {
   getDocs,
@@ -27,7 +32,6 @@ export function Members(): JSX.Element {
     (state: RootState) => state.chat
   );
 
-  // const [deleteIt, setDeleteIt] = useState(true);
   const [activeChat, setActiveChat] = useState("");
 
   const idGenerator = (id1: string, id2: string): string => {
@@ -41,6 +45,8 @@ export function Members(): JSX.Element {
   const chatChangeHandler = (userId: string): void => {
     setActiveChat(userId);
 
+    dispatch(setCompanion(userId));
+
     const newChatId: string = idGenerator(userId, id);
 
     dispatch(setChat(newChatId));
@@ -49,21 +55,19 @@ export function Members(): JSX.Element {
 
     let storage: any = [];
 
-    getDocs(memberRef).then((snapshot) => {
+    onSnapshot(memberRef, (snapshot) => {
       snapshot.docs.forEach((doc) => {
         storage.push({ ...doc.data() });
       });
+
+      if (!storage.find((el: MemberInterface) => el.uid === userId)) {
+        addDoc(memberRef, {
+          uid: userId,
+        });
+      }
+
+      storage = [];
     });
-
-    console.log(storage);
-
-    if (
-      storage.every((el: MemberInterface) => el.uid === userId || el.uid === id)
-    ) {
-      addDoc(memberRef, {
-        uid: userId,
-      });
-    }
   };
 
   const getAllUsers = () => {
@@ -123,15 +127,13 @@ export function Members(): JSX.Element {
       <div
         onClick={() => {
           dispatch(setChat(baseChatId));
+          dispatch(setCompanion(""));
           setActiveChat("");
         }}
         className="mainChatButton"
       >
         Главный чат
       </div>
-      {/* <Button variant="outlined" onClick={() => setDeleteIt(!deleteIt)}>
-        ЭТО НА СЕЙЧАС
-      </Button> */}
       {allUsers?.map((el: MemberInfoInterface) =>
         el.uid === id ? (
           <div

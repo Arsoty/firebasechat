@@ -7,6 +7,7 @@ import { Button, Container, Grid, TextField } from "@mui/material";
 import { db } from "../firebase/config";
 import { MsgInterface, TimestampInterface } from "../store/types";
 import { setMessages } from "../store/actions/chatActions";
+import { basePhotoURL } from "./Header";
 import {
   addDoc,
   serverTimestamp,
@@ -20,7 +21,7 @@ export function Chat(): JSX.Element {
   const dispatch = useDispatch();
 
   const { id, nickname } = useSelector((state: RootState) => state.auth);
-  const { chatId, messages, members, allUsers } = useSelector(
+  const { chatId, messages, members, allUsers, companionId } = useSelector(
     (state: RootState) => state.chat
   );
 
@@ -33,17 +34,6 @@ export function Chat(): JSX.Element {
     t.setSeconds(timestamp?.seconds);
     return t.toLocaleString("ru-RU");
   };
-
-  const getInfoAboutUser = () => {
-    return (members.length !== allUsers.length ? (
-      <div>
-        <img src={members.find((el) => el.uid !== id)?.photoUrl}></img>
-        <span>{members.find((el) => el.uid !== id)?.displayName}</span>
-      </div>
-    ) : (
-      <div>Главный чат</div>
-    ))
-  }
 
   const sendMesssge = (): void => {
     addDoc(messageRef, {
@@ -68,7 +58,9 @@ export function Chat(): JSX.Element {
       snapshot.docs.forEach((doc) => {
         storage.push({ ...doc.data() });
       });
+
       dispatch(setMessages(storage));
+
       storage = [];
     });
   };
@@ -80,12 +72,27 @@ export function Chat(): JSX.Element {
   return (
     <Grid
       container
-      justifyContent="flex-end"
-      direction="column"
+      justifyContent="flex-start"
+      direction="row"
       className="chatBox"
       sx={{ width: "75%", height: "90%" }}
     >
-      {getInfoAboutUser()}
+      {companionId ? (
+        <div>
+          <img
+            className="avatar"
+            src={`${
+              allUsers.find((el) => el.uid === companionId)?.photoUrl ||
+              basePhotoURL
+            }`}
+          ></img>
+          <span>
+            {allUsers.find((el) => el.uid === companionId)?.displayName}
+          </span>
+        </div>
+      ) : (
+        <div>Главный чат</div>
+      )}
       <Grid container className="msgAreaMain">
         <div className="msgArea">
           {messages.map((el: MsgInterface) =>
