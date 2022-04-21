@@ -5,15 +5,17 @@ import {
   SET_MEMBERS,
   SET_MESSAGES,
   SET_ALL_USERS,
+  SET_COMPANION,
 } from "../types";
 
-export const baseChatId: string = "OgxmGU8RvpH8yOpAanHj";
+export const baseChatId: string = "FWAnvPnTiktYUx2fil2J";
 
 const initialState: ChatState = {
   chatId: baseChatId,
   members: [],
   messages: [],
   allUsers: [],
+  companionId: "",
 };
 
 export default function chatReducer(state = initialState, action: ChatAction) {
@@ -34,6 +36,11 @@ export default function chatReducer(state = initialState, action: ChatAction) {
       return {
         ...state,
         messages: action.payload,
+      };
+    case SET_COMPANION:
+      return {
+        ...state,
+        companionId: action.payload,
       };
     default:
       return state;

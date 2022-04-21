@@ -47,12 +47,14 @@ export const SET_CHAT = "SET_CHAT";
 export const SET_MEMBERS = "SET_MEMBERS";
 export const SET_MESSAGES = "SET_MESSAGES";
 export const SET_ALL_USERS = "SET_ALL_USERS";
+export const SET_COMPANION = "SET_COMPANION";
 
 export interface ChatState {
   chatId: string;
   members: MemberInfoInterface[];
   messages: MsgInterface[];
   allUsers: MemberInfoInterface[];
+  companionId: string;
 }
 
 export interface SetChatAction {
@@ -75,11 +77,17 @@ export interface SetAllUsersAction {
   payload: MemberInfoInterface[];
 }
 
+export interface SetCompanionAction {
+  type: typeof SET_COMPANION;
+  payload: string;
+}
+
 export type ChatAction =
   | SetChatAction
   | SetMembersAction
   | SetMessagesAction
-  | SetAllUsersAction;
+  | SetAllUsersAction
+  | SetCompanionAction;
 
 export interface TimestampInterface {
   seconds: number;
