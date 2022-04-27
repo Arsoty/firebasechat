@@ -3,3 +3,12 @@
   height: 50px;
   width: 50px;
 }
+
+.activeUser {
+  padding-right: 2%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 6%;
+}

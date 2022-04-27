@@ -6,31 +6,21 @@ import { Grid } from "@mui/material";
 import { baseChatId } from "../store/reducers/chatReducer";
 import "../styles/ChatStyles.scss";
 import { db } from "../firebase/config";
-import {
-  setAllUsers,
-  setChat,
-  setMembers,
-  setCompanion,
-} from "../store/actions/chatActions";
+import { setChat, setCompanion } from "../store/actions/chatActions";
 import { basePhotoURL } from "./Header";
-import {
-  getDocs,
-  onSnapshot,
-  collection,
-  addDoc,
-  query,
-  where,
-} from "firebase/firestore";
+import { onSnapshot, collection, addDoc } from "firebase/firestore";
 import { MemberInfoInterface, MemberInterface } from "../store/types";
+import { getAllUsers, getMembers } from "../store/actions/firebaseActions";
 
 export function Members(): JSX.Element {
+  const savedMessagesImg =
+    "https://forteams.co/wp-content/uploads/2020/07/apps.22113.327126b2-6c96-4509-a2aa-f784331ea9ef.352176c3-a0a6-4f4d-b7ec-2deda738909a.c039d960-f794-4dab-a792-d77f46e9b7df.png";
+
   const dispatch = useDispatch();
 
   //тип невер у аутхРедьюсера почему-то.
   const { id }: any = useSelector((state: RootState) => state.auth);
-  const { chatId, allUsers, members } = useSelector(
-    (state: RootState) => state.chat
-  );
+  const { chatId, allUsers } = useSelector((state: RootState) => state.chat);
 
   const [activeChat, setActiveChat] = useState("");
 
@@ -38,9 +28,6 @@ export function Members(): JSX.Element {
     let id = id1.substring(0, 5) + id2.substring(0, 5);
     return id.split("").sort().join("");
   };
-
-  const savedMessagesImg =
-    "https://forteams.co/wp-content/uploads/2020/07/apps.22113.327126b2-6c96-4509-a2aa-f784331ea9ef.352176c3-a0a6-4f4d-b7ec-2deda738909a.c039d960-f794-4dab-a792-d77f46e9b7df.png";
 
   const chatChangeHandler = (userId: string): void => {
     setActiveChat(userId);
@@ -70,56 +57,9 @@ export function Members(): JSX.Element {
     });
   };
 
-  const getAllUsers = () => {
-    const usersRef = collection(db, "users");
-    let storage: any = [];
-
-    onSnapshot(usersRef, (snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        storage.push({ ...doc.data() });
-      });
-
-      dispatch(setAllUsers(storage));
-
-      storage = [];
-    });
-  };
-
-  const getMembers = () => {
-    const memberRef = collection(db, "conversations", chatId, "member");
-    const usersRef = collection(db, "users");
-
-    let storage: any = [];
-    onSnapshot(memberRef, (snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        storage.push({ ...doc.data() });
-      });
-
-      if (!storage.find((member: MemberInterface) => member.uid === id)) {
-        addDoc(memberRef, {
-          uid: id,
-        });
-      }
-
-      let membersInfo: any = [];
-      storage.forEach((member: MemberInterface) => {
-        const q = query(usersRef, where("uid", "==", member.uid));
-        onSnapshot(q, (snapshot) => {
-          snapshot.docs.forEach((doc) => {
-            membersInfo.push({ ...doc.data() });
-          });
-        });
-      });
-
-      dispatch(setMembers(membersInfo));
-
-      storage = [];
-    });
-  };
-
   useEffect(() => {
-    getMembers();
-    getAllUsers();
+    dispatch(getMembers(chatId, id));
+    dispatch(getAllUsers());
   }, [chatId]);
 
   return (

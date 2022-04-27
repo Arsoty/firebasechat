@@ -6,22 +6,15 @@ import { RootState } from "../store";
 import { Button, Container, Grid, TextField } from "@mui/material";
 import { db } from "../firebase/config";
 import { MsgInterface, TimestampInterface } from "../store/types";
-import { setMessages } from "../store/actions/chatActions";
+import { getMessages } from "../store/actions/firebaseActions";
 import { basePhotoURL } from "./Header";
-import {
-  addDoc,
-  serverTimestamp,
-  orderBy,
-  query,
-  onSnapshot,
-  collection,
-} from "firebase/firestore";
+import { addDoc, serverTimestamp, collection } from "firebase/firestore";
 
 export function Chat(): JSX.Element {
   const dispatch = useDispatch();
 
   const { id, nickname } = useSelector((state: RootState) => state.auth);
-  const { chatId, messages, members, allUsers, companionId } = useSelector(
+  const { chatId, messages, allUsers, companionId } = useSelector(
     (state: RootState) => state.chat
   );
 
@@ -51,22 +44,8 @@ export function Chat(): JSX.Element {
     }
   };
 
-  const getMessages = () => {
-    const q = query(messageRef, orderBy("timestamp"));
-    let storage: any = [];
-    onSnapshot(q, (snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        storage.push({ ...doc.data() });
-      });
-
-      dispatch(setMessages(storage));
-
-      storage = [];
-    });
-  };
-
   useEffect(() => {
-    getMessages();
+    dispatch(getMessages(chatId));
   }, [chatId]);
 
   return (
@@ -75,10 +54,10 @@ export function Chat(): JSX.Element {
       justifyContent="flex-start"
       direction="row"
       className="chatBox"
-      sx={{ width: "75%", height: "90%" }}
+      sx={{ width: "75%", height: "80%" }}
     >
       {companionId ? (
-        <div>
+        <div className="info">
           <img
             className="avatar"
             src={`${
@@ -86,12 +65,12 @@ export function Chat(): JSX.Element {
               basePhotoURL
             }`}
           ></img>
-          <span>
+          <span className="nickname">
             {allUsers.find((el) => el.uid === companionId)?.displayName}
           </span>
         </div>
       ) : (
-        <div>Главный чат</div>
+        <div className="infoDefault">Главный чат</div>
       )}
       <Grid container className="msgAreaMain">
         <div className="msgArea">
@@ -112,27 +91,30 @@ export function Chat(): JSX.Element {
           )}
         </div>
       </Grid>
-      <Container className="chatContainer">
-        <Grid container justifyContent="flex-start">
-          <TextField
-            onChange={(e) => setText(e.target.value)}
-            label="Сообщение"
-            color="primary"
-            className="msgInput"
-            onKeyDown={keyDownHandler}
-            value={text}
-          />
-          <Button
-            onClick={() => {
-              sendMesssge();
-              setText("");
-            }}
-            variant={"contained"}
-          >
-            Отправить
-          </Button>
-        </Grid>
-      </Container>
+      <Grid
+        container
+        flexDirection="row"
+        justifyContent="center"
+        className="chatContainer"
+      >
+        <TextField
+          onChange={(e) => setText(e.target.value)}
+          label="Сообщение"
+          color="primary"
+          className="msgInput"
+          onKeyDown={keyDownHandler}
+          value={text}
+        />
+        <Button
+          onClick={() => {
+            sendMesssge();
+            setText("");
+          }}
+          variant={"contained"}
+        >
+          Отправить
+        </Button>
+      </Grid>
     </Grid>
   );
 }
