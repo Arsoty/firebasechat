@@ -25,13 +25,14 @@ const Header: FC = () => {
     <AppBar color="primary" position="static">
       <Toolbar>
         <Grid container justifyContent="flex-end" alignItems={"center"}>
-          {authenticated ? (
-            <img src={photoURL || basePhotoURL} className="avatar"></img>
-          ) : (
-            <></>
-          )}
-
-          <div>{nickname}</div>
+          <div className="activeUser">
+            {authenticated ? (
+              <img src={photoURL || basePhotoURL} className="avatar"></img>
+            ) : (
+              <></>
+            )}
+            <div>{nickname}</div>
+          </div>
           {authenticated ? (
             <Button
               onClick={() => {

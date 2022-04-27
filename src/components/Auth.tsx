@@ -5,6 +5,7 @@ import { authWithGoogle } from "../store/actions/authActions";
 import "../styles/AuthStyles.scss";
 import { Registration } from "./Registration";
 import { Login } from "./Login";
+import Header from "./Header";
 
 export function Auth(): JSX.Element {
   const dispatch = useDispatch();
@@ -12,18 +13,21 @@ export function Auth(): JSX.Element {
   const [registration, setRegistration] = useState(false);
 
   return (
-    <Container className="authContainer">
-      <Grid className="authBox" container direction="column">
-        {registration ? <Registration /> : <Login />}
+    <>
+      <Header />
+      <Container className="authContainer">
+        <Grid className="authBox" container direction="column">
+          {registration ? <Registration /> : <Login />}
 
-        <Button onClick={() => dispatch(authWithGoogle())} variant="outlined">
-          Авторизироваться с помощью Google
-        </Button>
+          <Button onClick={() => dispatch(authWithGoogle())} variant="outlined">
+            Авторизироваться с помощью Google
+          </Button>
 
-        <Button onClick={() => setRegistration(!registration)}>
-          {registration ? "Логин" : "Регистрация"}
-        </Button>
-      </Grid>
-    </Container>
+          <Button onClick={() => setRegistration(!registration)}>
+            {registration ? "Логин" : "Регистрация"}
+          </Button>
+        </Grid>
+      </Container>
+    </>
   );
 }
