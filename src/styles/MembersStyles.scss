@@ -5,7 +5,7 @@
   height: 92%;
 
   .mainChatButton {
-    height: 3%;
+    max-height: 3%;
     margin-left: auto;
     margin-right: auto;
     width: 90%;
@@ -18,7 +18,7 @@
   }
 
   .memberList {
-    height: 7%;
+    max-height: 7%;
     //#0fa680
     background-color: rgb(245, 245, 245);
     margin-top: 1%;
@@ -37,7 +37,7 @@
   }
 
   .memberListActive {
-    height: 7%;
+    max-height: 7%;
     background-color: #ab7eff;
     margin-top: 1%;
     border-top: 1px solid black;
