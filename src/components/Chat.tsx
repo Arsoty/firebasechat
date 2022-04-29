@@ -54,7 +54,7 @@ export function Chat(): JSX.Element {
       justifyContent="flex-start"
       direction="row"
       className="chatBox"
-      sx={{ width: "75%", height: "80%" }}
+      sx={{ width: "75%", maxHeight: "80%" }}
     >
       {companionId ? (
         <div className="info">
@@ -77,13 +77,13 @@ export function Chat(): JSX.Element {
           {messages.map((el: MsgInterface) =>
             el.authorId === id ? (
               <div className="userMsg">
-                {el.text}
+                <div className="userText">{el.text}</div>
                 <div>{el.authorName}</div>
                 <div>{toDateTime(el.timestamp)}</div>
               </div>
             ) : (
               <span className="otherMsg">
-                {el.text}
+                <div className="otherText">{el.text}</div>
                 <div>{el.authorName}</div>
                 <div>{toDateTime(el.timestamp)}</div>
               </span>

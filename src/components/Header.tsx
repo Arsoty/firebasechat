@@ -22,7 +22,7 @@ const Header: FC = () => {
   );
 
   return (
-    <AppBar color="primary" position="static">
+    <AppBar className="appBar" color="primary" position="static">
       <Toolbar>
         <Grid container justifyContent="flex-end" alignItems={"center"}>
           <div className="activeUser">

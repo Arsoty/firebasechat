@@ -1,14 +1,18 @@
-.avatar {
-  border-radius: 50%;
-  height: 50px;
-  width: 50px;
-}
+.appBar {
+  max-height: 5em;
 
-.activeUser {
-  padding-right: 2%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 6%;
+  .avatar {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+  }
+
+  .activeUser {
+    padding-right: 2%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 6%;
+  }
 }
